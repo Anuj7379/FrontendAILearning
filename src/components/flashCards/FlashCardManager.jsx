@@ -12,7 +12,7 @@ import flashcardBg from "../../assets/flashcardBg.png";
 import toast from "react-hot-toast";
 import moment from "moment";
 import aiService from "../../services/aiService";
-import flashCardService from "../../services/flashCardService.js";
+import flashcardService from "../../services/flashcardService.js";
 import Spinner from "../common/Spinner";
 import Flashcard from "./Flashcard";
 import Modal from "../common/Modal";
@@ -31,7 +31,7 @@ const FlashCardManager = ({ documentId }) => {
     setLoading(true);
     try {
       const response =
-        await flashCardService.getFlashCardsForDocuments(documentId);
+        await flashcardService.getFlashCardsForDocuments(documentId);
       setFlashcards(response);
       console.log(response);
     } catch {
@@ -74,7 +74,7 @@ const FlashCardManager = ({ documentId }) => {
     const card = cards[cardIndex];
     if (!card) return;
     try {
-      await flashCardService.reviewFlashcard(card._id, { cardIndex });
+      await flashcardService.reviewFlashcard(card._id, { cardIndex });
     } catch {
       toast.error("Failed to review flashcard");
     }
@@ -82,7 +82,7 @@ const FlashCardManager = ({ documentId }) => {
 
   const handleToggleStar = async (cardId) => {
     try {
-      await flashCardService.toggleStar(cardId);
+      await flashcardService.toggleStar(cardId);
 
       setFlashcards((prevSets) =>
         prevSets.map((set) => {
@@ -99,10 +99,8 @@ const FlashCardManager = ({ documentId }) => {
 
           setSelectedSet(updatedSet);
           return updatedSet;
-          
         }),
       );
-      
     } catch (error) {
       console.error(error);
     }
@@ -117,7 +115,7 @@ const FlashCardManager = ({ documentId }) => {
   const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
-      await flashCardService.deleteFlashcardSet(setToDelete._id);
+      await flashcardService.deleteFlashcardSet(setToDelete._id);
       toast.success("Deleted successfully");
       fetchFlashcardSet();
     } catch {
@@ -139,31 +137,31 @@ const FlashCardManager = ({ documentId }) => {
     const card = cards[currentCardindex];
 
     return (
-      <>  <button
+      <>
+        {" "}
+        <button
           onClick={() => setSelectedSet(null)}
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition"
         >
           ← Back
         </button>
-      <div className=" p-4 md:p-8 flex flex-col items-center justify-center bg-gray-50">
-      
+        <div className=" p-4 md:p-8 flex flex-col items-center justify-center bg-gray-50">
+          <Flashcard card={card} onToggleStar={handleToggleStar} />
 
-        <Flashcard card={card} onToggleStar={handleToggleStar} />
+          <div className="flex items-center gap-4 mt-6">
+            <button onClick={handlePrevCard} className="navBtn">
+              <ChevronLeft />
+            </button>
 
-        <div className="flex items-center gap-4 mt-6">
-          <button onClick={handlePrevCard} className="navBtn">
-            <ChevronLeft />
-          </button>
+            <span className="text-sm text-gray-800 bg-gray-100 rounded-md px-3 py-1 border-1 border-gray-300 ">
+              {currentCardindex + 1} / {cards.length}
+            </span>
 
-          <span className="text-sm text-gray-800 bg-gray-100 rounded-md px-3 py-1 border-1 border-gray-300 ">
-            {currentCardindex + 1} / {cards.length}
-          </span>
-
-          <button onClick={handleNextCard} className="navBtn">
-            <ChevronRight />
-          </button>
+            <button onClick={handleNextCard} className="navBtn">
+              <ChevronRight />
+            </button>
+          </div>
         </div>
-      </div>
       </>
     );
   };
@@ -233,22 +231,22 @@ const FlashCardManager = ({ documentId }) => {
           </div>
 
           <button
-              onClick={handleGenerateFlashcards}
-              disabled={generating}
-              className="primaryBtn "
-            >
-              {generating ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Sparkles className="animate-spin" />
-                  generating...
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <Sparkles />
-                  Generate Flashcard
-                </span>
-              )}
-            </button>
+            onClick={handleGenerateFlashcards}
+            disabled={generating}
+            className="primaryBtn "
+          >
+            {generating ? (
+              <span className="flex items-center justify-center gap-2">
+                <Sparkles className="animate-spin" />
+                generating...
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                <Sparkles />
+                Generate Flashcard
+              </span>
+            )}
+          </button>
         </div>
 
         {/* grid */}

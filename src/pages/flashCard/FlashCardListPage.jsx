@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import flashcardService from "../../services/flashCardService.js";
+import flashcardService from "../../services/flashcardService.js";
 import PageHeader from "../../components/common/PageHeader.jsx";
 import Spinner from "../../components/common/Spinner.jsx";
 import FlashcardSetCard from "../../components/flashCards/FlashcardSetCard.jsx";
@@ -24,7 +24,7 @@ const FlashCardListPage = () => {
     };
 
     fetchFlashCardSets();
-  }, []); 
+  }, []);
 
   const renderContent = () => {
     if (loading) {
