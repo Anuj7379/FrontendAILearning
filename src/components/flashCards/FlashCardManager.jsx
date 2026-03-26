@@ -12,7 +12,7 @@ import flashcardBg from "../../assets/flashcardBg.png";
 import toast from "react-hot-toast";
 import moment from "moment";
 import aiService from "../../services/aiService";
-import flashcardService from "../../services/flashCardService.js";
+import flashCardService from "../../services/flashCardService.js";
 import Spinner from "../common/Spinner";
 import Flashcard from "./Flashcard";
 import Modal from "../common/Modal";
@@ -31,7 +31,7 @@ const FlashCardManager = ({ documentId }) => {
     setLoading(true);
     try {
       const response =
-        await flashcardService.getFlashCardsForDocuments(documentId);
+        await flashCardService.getFlashCardsForDocuments(documentId);
       setFlashcards(response);
       console.log(response);
     } catch {
@@ -74,7 +74,7 @@ const FlashCardManager = ({ documentId }) => {
     const card = cards[cardIndex];
     if (!card) return;
     try {
-      await flashcardService.reviewFlashcard(card._id, { cardIndex });
+      await flashCardService.reviewFlashcard(card._id, { cardIndex });
     } catch {
       toast.error("Failed to review flashcard");
     }
@@ -82,7 +82,7 @@ const FlashCardManager = ({ documentId }) => {
 
   const handleToggleStar = async (cardId) => {
     try {
-      await flashcardService.toggleStar(cardId);
+      await flashCardService.toggleStar(cardId);
 
       setFlashcards((prevSets) =>
         prevSets.map((set) => {
@@ -117,7 +117,7 @@ const FlashCardManager = ({ documentId }) => {
   const handleConfirmDelete = async () => {
     setDeleting(true);
     try {
-      await flashcardService.deleteFlashcardSet(setToDelete._id);
+      await flashCardService.deleteFlashcardSet(setToDelete._id);
       toast.success("Deleted successfully");
       fetchFlashcardSet();
     } catch {
