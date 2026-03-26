@@ -62,7 +62,7 @@ const deleteFlashcardSet = async (id) => {
   }
 };
 
-const flashcardService = {
+const flashcardService  = {
   getAllFlashCardSets,
   getFlashCardsForDocuments,
   reviewFlashcard,
@@ -70,4 +70,4 @@ const flashcardService = {
   deleteFlashcardSet,
 };
 
-export default flashcardService;
+export default flashcardService ;
