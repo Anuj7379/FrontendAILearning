@@ -12,7 +12,7 @@ import flashcardBg from "../../assets/flashcardBg.png";
 import toast from "react-hot-toast";
 import moment from "moment";
 import aiService from "../../services/aiService";
-import flashcardService from "../../services/flashcardService.js";
+import flashcardService from "../../services/flashCardService";
 import Spinner from "../common/Spinner";
 import Flashcard from "./Flashcard";
 import Modal from "../common/Modal";

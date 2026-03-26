@@ -11,6 +11,8 @@ import AiActions from "../../components/ai/AiActions";
 import FlashCardManager from "../../components/flashCards/FlashCardManager";
 import QuizManager from "../../components/Quizzes/QuizManager";
 
+const baseUrl = import.meta.env.VITE_API_URL 
+
 const DocumentDetailPage = () => {
   const { id } = useParams();
 
@@ -45,7 +47,7 @@ const DocumentDetailPage = () => {
       return filePath;
     }
 
-    const baseUrl = process.env.REACT_APP_BASE_URL || "http://localhost:4000";
+    
 
     return `${baseUrl}${filePath.startsWith("/") ? "" : "/"}${filePath}`;
   };
