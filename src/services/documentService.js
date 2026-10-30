@@ -20,10 +20,7 @@ const uploadDocument = async (formData) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-<<<<<<< HEAD
         timeout: 120000,
-=======
->>>>>>> 01bee3906ea871c78277b9f4f3ffe14815af5469
       },
     );
 
