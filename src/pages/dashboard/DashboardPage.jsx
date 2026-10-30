@@ -140,12 +140,7 @@ const DashboardPage = () => {
                 come.
               </p>
             </div>
-            <Link
-              to="/documents?upload=1"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50"
-            >
-              <Plus size={18} /> Add document
-            </Link>
+          
           </div>
           <LayoutDashboard
             className="absolute -bottom-8 right-8 hidden text-white/5 sm:block"
