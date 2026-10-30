@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Upload, Trash2, FileText, X, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -8,6 +9,8 @@ import Button from "../../components/common/Button";
 import DocumentCard from "../../components/documents/DocumentCard";
 
 const DocumentListPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +42,13 @@ const DocumentListPage = () => {
   useEffect(() => {
     fetchDocuments();
   }, []);
+
+  useEffect(() => {
+    if (location.state?.openUpload) {
+      setIsUploadModalOpen(true);
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.key, location.pathname, location.state, navigate]);
 
   //  File change
   const handleFileChange = (e) => {
@@ -74,7 +84,7 @@ const DocumentListPage = () => {
       setUploadTitle("");
       fetchDocuments();
     } catch (error) {
-      toast.error("Upload failed");
+      toast.error(error.error || error.message || "Upload failed");
     } finally {
       setUploading(false);
     }

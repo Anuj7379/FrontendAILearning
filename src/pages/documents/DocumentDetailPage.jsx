@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import documentService from "../../services/documentService";
 import toast from "react-hot-toast";
 import Spinner from "../../components/common/Spinner";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink, RefreshCw } from "lucide-react";
 import PageHeader from "../../components/common/PageHeader";
 import Tabs from "../../components/common/Tabs";
 import ChatInterface from "../../components/chat/ChatInterface";
@@ -11,133 +11,156 @@ import AiActions from "../../components/ai/AiActions";
 import FlashCardManager from "../../components/flashCards/FlashCardManager";
 import QuizManager from "../../components/Quizzes/QuizManager";
 
-const baseUrl = import.meta.env.VITE_API_URL 
-
 const DocumentDetailPage = () => {
   const { id } = useParams();
 
   const [document, setDocument] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Content");
+  const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfLoading, setPdfLoading] = useState(true);
+  const [pdfError, setPdfError] = useState("");
+  const [pdfAttempt, setPdfAttempt] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchDocument = async () => {
       setLoading(true);
       try {
         const response = await documentService.getDocumentById(id);
-        setDocument(response);
-        console.log("FULL RESPONSE:", response);
+        if (!cancelled) setDocument(response);
       } catch (error) {
-        toast.error("Failed to fetch document", { error });
+        if (!cancelled) {
+          toast.error(
+            error.message || error.error || "Failed to fetch document.",
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchDocument();
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
-  const getPdfUrl = () => {
-    if (!document?.filePath) return null;
+  useEffect(() => {
+    let cancelled = false;
+    let objectUrl;
 
-    const filePath = document.filePath;
-    console.warn("File path is already a full URL:", filePath);
+    const fetchPdf = async () => {
+      setPdfUrl(null);
+      setPdfError("");
+      setPdfLoading(true);
 
-    if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
-      return filePath;
-    }
+      try {
+        const file = await documentService.getDocumentFile(id);
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(file);
+        setPdfUrl(objectUrl);
+      } catch (error) {
+        if (cancelled) return;
+        const message =
+          error.message || error.error || "Could not load this PDF.";
+        setPdfError(message);
+      } finally {
+        if (!cancelled) setPdfLoading(false);
+      }
+    };
 
-    
-
-    return `${baseUrl}${filePath.startsWith("/") ? "" : "/"}${filePath}`;
-  };
-
-  /* ---------------- TABS CONTENT ---------------- */
+    fetchPdf();
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [id, pdfAttempt]);
 
   const renderContent = () => {
     if (loading) return <Spinner />;
-    if (!document || !document.filePath) {
+    if (!document?.filePath) {
       return (
-        <p className="text-gray-500 p-4">Pdf not available for this document</p>
+        <p className="p-4 text-gray-500">PDF is not available for this document.</p>
       );
     }
-    const pdfUrl = getPdfUrl();
-    if (!pdfUrl) {
+
+    if (pdfLoading) {
       return (
-        <p className="text-gray-500 p-4">
-          PDF URL is not available for this document
-        </p>
+        <div className="flex h-64 items-center justify-center">
+          <Spinner />
+        </div>
+      );
+    }
+
+    if (pdfError || !pdfUrl) {
+      return (
+        <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
+          <p className="font-medium text-slate-800">PDF could not be loaded</p>
+          <p className="max-w-lg text-sm text-slate-600">
+            {pdfError || "The PDF file is not available."}
+          </p>
+          <button
+            type="button"
+            onClick={() => setPdfAttempt((attempt) => attempt + 1)}
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+          >
+            <RefreshCw size={16} /> Try again
+          </button>
+        </div>
       );
     }
 
     return (
-      <div className="  ">
-        <div className=" flex justify-between items-center mb-2">
-          <p className="text-gray-500 text-lg font-semibold">Document</p>
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-lg font-semibold text-gray-500">Document</p>
           <a
             href={pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 text-blue-600 hover:underline"
           >
-            Open PDF in new Tab <ExternalLink size={16} />
+            Open PDF in new tab <ExternalLink size={16} />
           </a>
         </div>
-        <div>
-          <iframe
-            src={pdfUrl}
-            title="PDF Viewer"
-            frameBorder={0}
-            style={{
-              colorScheme: "light",
-            }}
-            className="w-full h-[650px] border rounded-lg"
-          />
-        </div>
+        <iframe
+          src={pdfUrl}
+          title="PDF Viewer"
+          className="h-[650px] w-full rounded-lg border"
+          style={{ colorScheme: "light" }}
+        />
       </div>
     );
   };
 
-  const renderChat = () => {
-    return <ChatInterface documentId={id} />;
-  };
-
-  const renderAI = () => {
-    return <AiActions documentId={id} />;
-  };
-
-  const renderFlashcards = () => <FlashCardManager documentId={id} />;
-
-  const renderQuizzes = () => <QuizManager documentId={id} />;
-
   const tabs = [
     { name: "Content", content: renderContent },
-    { name: "Chat", content: renderChat },
-    { name: "AI Actions ", content: renderAI },
-    { name: "Flashcards", content: renderFlashcards },
-    { name: "Quizzes", content: renderQuizzes },
+    { name: "Chat", content: () => <ChatInterface documentId={id} /> },
+    { name: "AI Actions ", content: () => <AiActions documentId={id} /> },
+    {
+      name: "Flashcards",
+      content: () => <FlashCardManager documentId={id} />,
+    },
+    { name: "Quizzes", content: () => <QuizManager documentId={id} /> },
   ];
-
-  /* ---------------- STATES ---------------- */
 
   if (loading) return <Spinner />;
   if (!document) return <p className="p-6 text-gray-500">Document not found</p>;
 
-  /* ---------------- UI ---------------- */
-
   return (
-    <div className="text-gray-800 p-4  ">
+    <div className="p-4 text-gray-800">
       <div className="py-2">
         <Link
           to="/documents"
-          className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-50 transition"
+          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 hover:shadow-md"
         >
           <ArrowLeft size={16} />
           Back to Documents
         </Link>
       </div>
       <PageHeader title={document.title} />
-
       <div className="max-h-[600px]">
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       </div>

@@ -77,6 +77,7 @@ const DashboardPage = () => {
           ) : (
             <Link
               to="/documents"
+              state={{ openUpload: true }}
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white transition hover:bg-emerald-700"
             >
               <Plus size={18} /> Open documents
@@ -142,6 +143,7 @@ const DashboardPage = () => {
             </div>
             <Link
               to="/documents"
+              state={{ openUpload: true }}
               className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50"
             >
               <Plus size={18} /> Add document

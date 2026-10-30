@@ -55,11 +55,37 @@ const getDocumentById = async (_id) => {
   }
 };
 
+const getDocumentFile = async (id) => {
+  try {
+    const response = await axiosInstance.get(
+      API_PATHS.DOCUMENT.GET_DOCUMENT_FILE(id),
+      { responseType: "blob" },
+    );
+    return response.data;
+  } catch (err) {
+    const responseData = err.response?.data;
+    if (responseData instanceof Blob) {
+      const responseText = await responseData.text();
+      let errorPayload;
+      try {
+        errorPayload = JSON.parse(responseText);
+      } catch {
+        errorPayload = null;
+      }
+      throw errorPayload || {
+        message: responseText || "Failed to load document PDF",
+      };
+    }
+    throw responseData || { message: "Failed to load document PDF" };
+  }
+};
+
 const documentService = {
   getDocuments,
   uploadDocument,
   deleteDocument,
   getDocumentById,
+  getDocumentFile,
 };
 
 export default documentService;

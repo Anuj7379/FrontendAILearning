@@ -1,16 +1,17 @@
 import React from "react";
 import {
-  User,
-  LayoutDashboard,
-  FileText,
-  LogOut,
   BookOpen,
+  BrainCircuit,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  UserRound,
   X,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 
-const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
+const Sidebar = ({ isSidebarOpen, closeSidebar }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -22,68 +23,106 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const navItems = [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Documents", path: "/documents", icon: BookOpen },
-    { name: "Flashcards", path: "/flashcards", icon: FileText },
-    { name: "Profile", path: "/profile", icon: User },
+    { name: "Flashcards", path: "/flashcards", icon: BrainCircuit },
+    { name: "Profile", path: "/profile", icon: UserRound },
   ];
 
   return (
-    <div
-      className={`fixed inset-y-0 left-0 z-30 w-64 bg-gradient-to-b from-white to-gray-50 border-r border-gray-300 shadow-sm transform transition-transform duration-300 ease-in-out 
-      ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-      lg:translate-x-0 lg:static`}
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 flex w-[280px] shrink-0 flex-col border-r border-slate-800 bg-slate-950 text-white shadow-2xl shadow-slate-950/20 transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:z-20 lg:h-screen lg:translate-x-0 lg:shadow-none ${
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+      aria-label="Main navigation"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b-2 border-gray-400 ">
-        <h2 className="text-xl font-bold text-gray-800 ">Learn With AI</h2>
-
+      <div className="flex h-[72px] shrink-0 items-center justify-between border-b border-white/10 px-6">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-lg shadow-emerald-950/40">
+            <BrainCircuit size={21} />
+          </span>
+          <div>
+            <p className="text-sm font-bold tracking-wide text-white">
+              Learn With AI
+            </p>
+            <p className="mt-0.5 text-[11px] text-slate-400">
+              Your study space
+            </p>
+          </div>
+        </div>
         <button
-          onClick={toggleSidebar}
-          className="lg:hidden p-1 rounded-md hover:bg-gray-200"
+          type="button"
+          onClick={closeSidebar}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white lg:hidden"
+          aria-label="Close navigation menu"
         >
-          <X size={18} />
+          <X size={19} />
         </button>
       </div>
-      
 
-      {/* Navigation */}
-      <nav className="flex flex-col justify-between h-[calc(100%-70px)] px-4 py-5">
-        <ul className="space-y-2">
-          {navItems.map((item, index) => {
-            const Icon = item.icon;
-
-            return (
-              <li key={index}>
+      <div className="px-4 pt-7">
+        <p className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+          Workspace
+        </p>
+        <nav className="mt-3">
+          <ul className="space-y-1.5">
+            {navItems.map(({ name, path, icon: Icon }) => (
+              <li key={path}>
                 <NavLink
-                  to={item.path}
+                  to={path}
+                  onClick={closeSidebar}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-lg text-md lg:text-lg font-medium transition-all duration-200
-                    ${
+                    `group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${
                       isActive
-                        ? "bg-emerald-500 text-white shadow"
-                        : "text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                        ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-inset ring-emerald-400/20"
+                        : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
                     }`
                   }
                 >
-                  <Icon size={18} />
-                  {item.name}
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${
+                          isActive
+                            ? "bg-emerald-400/15 text-emerald-300"
+                            : "text-slate-500 group-hover:text-slate-200"
+                        }`}
+                      >
+                        {React.createElement(Icon, { size: 18 })}
+                      </span>
+                      {name}
+                      {isActive && (
+                        <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-300" />
+                      )}
+                    </>
+                  )}
                 </NavLink>
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
+        </nav>
+      </div>
 
-        {/* Logout */}
-        <div className="pt-6 border-t-2 border-gray-400 ">
-          <button
-            onClick={handleLogout}
-            className="flex items-center bg-gray-800 gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-400 hover:text-white transition"
-          >
-            <LogOut size={18} />
-            Logout
-          </button>
+      <div className="mt-auto p-4">
+        <div className="mb-4 rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-4">
+          <div className="flex items-center gap-2 text-emerald-300">
+            <FileText size={16} />
+            <span className="text-xs font-semibold">Study smarter</span>
+          </div>
+          <p className="mt-2 text-xs leading-5 text-slate-400">
+            Turn your notes into flashcards and quizzes whenever you need.
+          </p>
         </div>
-      </nav>
-    </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300"
+        >
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.06]">
+            <LogOut size={17} />
+          </span>
+          Sign out
+        </button>
+      </div>
+    </aside>
   );
 };
 
