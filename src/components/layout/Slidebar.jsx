@@ -12,8 +12,14 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 
 const Sidebar = ({ isSidebarOpen, closeSidebar }) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const initials = user?.username
+    ?.trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 
   const handleLogout = () => {
     logout();
@@ -102,14 +108,24 @@ const Sidebar = ({ isSidebarOpen, closeSidebar }) => {
       </div>
 
       <div className="mt-auto p-4">
-        <div className="mb-4 rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-4">
-          <div className="flex items-center gap-2 text-emerald-300">
-            <FileText size={16} />
-            <span className="text-xs font-semibold">Study smarter</span>
-          </div>
-          <p className="mt-2 text-xs leading-5 text-slate-400">
-            Turn your notes into flashcards and quizzes whenever you need.
-          </p>
+        <div className="mb-3 rounded-2xl border border-white/10 bg-white/[0.04] p-3">
+          <Link
+            to="/profile"
+            onClick={closeSidebar}
+            className="flex min-w-0 items-center gap-3 rounded-xl transition hover:bg-white/[0.04]"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-sm font-bold text-white">
+              {initials || <UserRound size={18} />}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold text-slate-100">
+                {user?.username || "Learner"}
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-slate-400">
+                {user?.email || "View account"}
+              </span>
+            </span>
+          </Link>
         </div>
         <button
           type="button"

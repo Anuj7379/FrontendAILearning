@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Upload, Trash2, FileText, X, Plus } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -9,8 +9,7 @@ import Button from "../../components/common/Button";
 import DocumentCard from "../../components/documents/DocumentCard";
 
 const DocumentListPage = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,11 +43,18 @@ const DocumentListPage = () => {
   }, []);
 
   useEffect(() => {
-    if (location.state?.openUpload) {
+    if (searchParams.get("upload") === "1") {
       setIsUploadModalOpen(true);
-      navigate(location.pathname, { replace: true, state: null });
+      setSearchParams(
+        (currentParams) => {
+          const nextParams = new URLSearchParams(currentParams);
+          nextParams.delete("upload");
+          return nextParams;
+        },
+        { replace: true },
+      );
     }
-  }, [location.key, location.pathname, location.state, navigate]);
+  }, [searchParams, setSearchParams]);
 
   //  File change
   const handleFileChange = (e) => {

@@ -12,7 +12,7 @@ const AppLayout = ({ children }) => {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900">
-      <div className="flex min-h-[calc(100vh-64px)] flex-1">
+      <div className="flex flex-1">
         {isSidebarOpen && (
           <button
             type="button"
