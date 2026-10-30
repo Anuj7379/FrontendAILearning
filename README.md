@@ -1,5 +1,6 @@
 # React + Vite
 
+<<<<<<< HEAD
 ## Netlify deployment
 
 The `public/_redirects` rule sends deep links back to the Vite app entry point.
@@ -9,6 +10,8 @@ Keep this file in place so refreshing routes such as `/dashboard` or
 Set `VITE_API_URL` to the deployed backend URL in the Netlify environment
 settings before building the frontend.
 
+=======
+>>>>>>> 01bee3906ea871c78277b9f4f3ffe14815af5469
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
